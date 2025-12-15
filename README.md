@@ -1,6 +1,8 @@
 # DevOps with Kubernetes - Configurations
 
-Configurations for the part "4.10. The project, the grande finale" of the DevOps with Kubernetes course from Helsinki University of Finland
+Codebase repository [here](https://github.com/lucksei/dwk-the-project-codebase)
+
+Configurations for the part "4.10. The project, the grande finale" of the DevOps with Kubernetes course from Helsinki University of Finland. The original repository for the entire course's exercises can be found [here](https://github.com/lucksei/k8s-submissions-chapter2).
 
 ## Run locally
 
