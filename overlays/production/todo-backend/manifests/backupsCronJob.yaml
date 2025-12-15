@@ -1,0 +1,55 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: todo-backend-postgres-backup
+  namespace: project 
+spec:
+  schedule: "0,30 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          volumes:
+            - name: gke-credentials
+              secret:
+                secretName: gke-credentials
+          containers:
+          - name: todo-backend-postgres-backup
+            image: google/cloud-sdk:alpine
+            command:
+            - /bin/bash
+            - -c
+            - |
+              apk add --no-cache postgresql-client
+              PGPASSWORD=$POSTGRES_PASSWORD pg_dump -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB > /tmp/backup.sql
+              ls -lh /tmp/backup.sql
+              gcloud auth activate-service-account --key-file=/secrets/gke-private-key.json
+              export PROJECT_ID=$(gcloud config get-value project)
+              gcloud storage cp /tmp/backup.sql gs://todo-backups-$PROJECT_ID/todo-backup-$(date +\%Y\%m\%d-\%H\%M\%S).sql
+              echo "Backup completed and uploaded to GCS."
+            volumeMounts:
+              - name: gke-credentials 
+                mountPath: /secrets/
+                readOnly: true
+            env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: todo-backend-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: todo-backend-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: todo-backend-secret
+                  key: POSTGRES_HOST
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: todo-backend-secret
+                  key: POSTGRES_DB

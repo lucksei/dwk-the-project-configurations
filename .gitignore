@@ -1,0 +1,4 @@
+key.txt
+*-private-key.json
+!*secrets*.enc.yaml
+.vscode

@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: todo-app-cronjob
+  namespace: project
+spec:
+  schedule: '0 * * * *'
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          volumes:
+            - name: todo-project-configmap
+              configMap:
+                name: todo-project-configmap
+          containers:
+            - name: todo-job
+              image: alpine/curl:latest
+              command:
+                - /bin/sh
+                - /scripts/todo_job.sh
+              resources: 
+                requests:
+                  memory: "32Mi"
+                  cpu: "50m"
+                limits:
+                  memory: "64Mi"
+                  cpu: "100m"
+              volumeMounts:
+                - name: todo-project-configmap
+                  mountPath: /scripts/todo_job.sh
+                  subPath: cron_job.sh
+                  readOnly: true
+              env:
+                - name: BASE_URL
+                  value: http://todo-backend-svc:3000
+          restartPolicy: OnFailure

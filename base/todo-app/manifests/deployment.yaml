@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: todo-app
+  name: todo-app
+  namespace: project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-app
+  strategy: 
+    type: Recreate # Fix for Persistent Volume Claim issues in GKE
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      volumes:
+        - name: todo-app-pv
+          persistentVolumeClaim:
+            claimName: todo-app-pvc
+      containers:
+        - image: lucksei/todo-app:latest
+          imagePullPolicy: Always
+          name: todo-app
+          volumeMounts:
+            - name: todo-app-pv
+              mountPath: /usr/src/data
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 3000
+          livenessProbe:
+            initialDelaySeconds: 15 
+            periodSeconds: 10
+            timeoutSeconds: 1
+            httpGet:
+              path: /readyz
+              port: 3000
+          resources: 
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+          envFrom:
+            - configMapRef:
+                name: todo-app-configmap
+status: {}

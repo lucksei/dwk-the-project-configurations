@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: production
+
+resources:
+- ./manifests/configMap.yaml
+- ./manifests/cronJob.yaml
+- ./manifests/gateway.yaml
+- ./todo-backend/manifests/configMap.yaml
+- ./todo-backend/manifests/secret.yaml
+- ./todo-backend/manifests/database.yaml
+- ./todo-backend/manifests/deployment.yaml
+- ./todo-backend/manifests/service.yaml
+- ./todo-broadcaster/manifests/secret.yaml
+- ./todo-broadcaster/manifests/deployment.yaml
+- ./todo-app/manifests/configMap.yaml
+- ./todo-app/manifests/secret.yaml
+- ./todo-app/manifests/persistentVolumeClaim.yaml
+- ./todo-app/manifests/deployment.yaml
+- ./todo-app/manifests/service.yaml

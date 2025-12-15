@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: todo-app-pvc
+  namespace: project
+spec:
+  # storageClassName: StorageClass # Do NOT use this specifier as GKE will provision the PV dynamically 
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi

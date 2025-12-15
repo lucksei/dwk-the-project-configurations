@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-backend
+  namespace: project
+spec:
+  selector:
+    matchLabels:
+      app: todo-backend
+  template:
+    metadata:
+      labels:
+        app: todo-backend
+    spec:
+      # # NOTE: Uncomment to use Cloud SQL Proxy
+      # volumes:
+      #   - name: cloudsql-credentials
+      #     secret:
+      #       secretName: cloudsql-credentials
+      containers:
+        - name: todo-backend
+          image: lucksei/todo-backend:latest
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 3000
+          livenessProbe:
+            initialDelaySeconds: 15 
+            periodSeconds: 10
+            timeoutSeconds: 1
+            httpGet:
+              path: /readyz
+              port: 3000
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m" 
+          envFrom:
+            - configMapRef:
+                name: todo-backend-configmap
+          env:
+            - name: DATABASE_URI
+              valueFrom:
+                secretKeyRef:
+                  key: DATABASE_URI
+                  name: todo-backend-secret
+            - name: NATS_URI
+              valueFrom:
+                secretKeyRef:
+                  key: NATS_URI
+                  name: todo-backend-secret
+
+        # # NOTE: Uncomment to use Cloud SQL Proxy
+        # - name: cloud-sql-proxy
+        #   image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.14.1
+        #   args:
+        #     - "--structured-logs"
+        #     - "--port=5432"
+        #     - "--credentials-file=/secrets/cloudsql-private-key.json"
+        #     - "dwk-gke-478711:southamerica-east1:todo-backend-postgres" # "your-project-id:your-region:your-sql-instance-id"
+        #   securityContext:
+        #     runAsNonRoot: true
+        #   resources:
+        #     requests:
+        #       memory: "64Mi" 
+        #       cpu: "50m"
+        #     limits: {}
+        #   volumeMounts:
+        #     - name: cloudsql-credentials 
+        #       mountPath: /secrets/
+        #       readOnly: true

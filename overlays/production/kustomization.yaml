@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: production
+
+resources:
+- ../../base
+- ./todo-backend/manifests/backupsCronJob.yaml
+- ./todo-broadcaster/manifests/configMap.yaml
+images:
+- name: lucksei/todo-app
+  newName: lucksei/todo-app
+  newTag: 4.9-af983d0d27eb20e79a7586e55b0011ecf2c97870
+- name: lucksei/todo-backend
+  newName: lucksei/todo-backend
+  newTag: 4.9-af983d0d27eb20e79a7586e55b0011ecf2c97870
+- name: lucksei/todo-broadcaster
+  newName: lucksei/todo-broadcaster
+  newTag: 4.9-af983d0d27eb20e79a7586e55b0011ecf2c97870
