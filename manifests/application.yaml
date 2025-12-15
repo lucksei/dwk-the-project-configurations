@@ -6,8 +6,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/lucksei/k8s-submissions-chapter2
-    path: project/overlays/production
+    repoURL: https://github.com/lucksei/dwk-the-project-configurations
+    path: overlays/production
     targetRevision: HEAD 
   destination:
     server: https://kubernetes.default.svc
@@ -24,8 +24,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/lucksei/k8s-submissions-chapter2
-    path: project/overlays/staging
+    repoURL: https://github.com/lucksei/dwk-the-project-configurations
+    path: overlays/staging
     targetRevision: HEAD
   destination:
     server: https://kubernetes.default.svc
